@@ -667,6 +667,28 @@ export const appRouter = router({
     }),
   }),
 
+  // ─── Wishlist ───
+  wishlist: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return db.getWishlist(ctx.user.id);
+    }),
+    productIds: protectedProcedure.query(async ({ ctx }) => {
+      return db.getWishlistProductIds(ctx.user.id);
+    }),
+    toggle: protectedProcedure.input(z.object({
+      productId: z.number(),
+    })).mutation(async ({ ctx, input }) => {
+      const exists = await db.isWishlisted(ctx.user.id, input.productId);
+      if (exists) {
+        await db.removeFromWishlist(ctx.user.id, input.productId);
+        return { wishlisted: false };
+      } else {
+        await db.addToWishlist(ctx.user.id, input.productId);
+        return { wishlisted: true };
+      }
+    }),
+  }),
+
   // ─── Waitlist (MoMo Payment Interest) ───
   waitlist: router({
     join: publicProcedure.input(z.object({
@@ -706,27 +728,6 @@ export const appRouter = router({
       }
 
       return { success: true };
-    }),
-  }),
-
-  // ─── Wishlist ───
-  wishlist: router({
-    list: protectedProcedure.query(async ({ ctx }) => {
-      return db.getWishlist(ctx.user.id);
-    }),
-    productIds: protectedProcedure.query(async ({ ctx }) => {
-      return db.getWishlistProductIds(ctx.user.id);
-    }),
-    toggle: protectedProcedure.input(z.object({
-      productId: z.number(),
-    })).mutation(async ({ ctx, input }) => {
-      const already = await db.isWishlisted(ctx.user.id, input.productId);
-      if (already) {
-        await db.removeFromWishlist(ctx.user.id, input.productId);
-        return { wishlisted: false };
-      }
-      await db.addToWishlist(ctx.user.id, input.productId);
-      return { wishlisted: true };
     }),
   }),
 });

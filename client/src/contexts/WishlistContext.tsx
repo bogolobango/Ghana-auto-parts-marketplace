@@ -25,6 +25,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const toggleMutation = trpc.wishlist.toggle.useMutation({
     onSuccess: (data) => {
       utils.wishlist.productIds.invalidate();
+      utils.wishlist.list.invalidate();
       toast.success(data.wishlisted ? "Saved to wishlist" : "Removed from wishlist");
     },
   });
@@ -33,7 +34,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     <WishlistContext.Provider
       value={{
         wishlistedIds: new Set(wishlistIds.data ?? []),
-        toggle: (productId) => toggleMutation.mutate({ productId }),
+        toggle: (productId) => {
+          if (!isAuthenticated) {
+            toast.error("Sign in to save items to your wishlist");
+            return;
+          }
+          toggleMutation.mutate({ productId });
+        },
       }}
     >
       {children}
