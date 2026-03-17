@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /vendor/dashboard
+Disallow: /api/
+
+Sitemap: https://v0-voom-ghana-marketplace.vercel.app/sitemap.xml
