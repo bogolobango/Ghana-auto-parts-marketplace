@@ -162,7 +162,7 @@ export function buildTsQuery(raw: string): string | null {
   const fullPhrase = LOOKUP.get(clean);
   if (fullPhrase) {
     const all = [clean, ...Array.from(fullPhrase)].map(safeLexeme).filter(Boolean);
-    const unique = [...new Set(all)].slice(0, 8);
+    const unique = Array.from(new Set(all)).slice(0, 8);
     return unique.length > 1 ? `(${unique.join(" | ")})` : `${unique[0]}:*`;
   }
 
@@ -179,7 +179,7 @@ export function buildTsQuery(raw: string): string | null {
       const bigramAliases = LOOKUP.get(bigram);
       if (bigramAliases) {
         const all = [bigram, ...Array.from(bigramAliases)].map(safeLexeme).filter(Boolean);
-        const unique = [...new Set(all)].slice(0, 8);
+        const unique = Array.from(new Set(all)).slice(0, 8);
         groups.push(unique.length > 1 ? `(${unique.join(" | ")})` : unique[0]);
         i += 2;
         continue;
@@ -190,7 +190,7 @@ export function buildTsQuery(raw: string): string | null {
     const aliases = LOOKUP.get(token);
     if (aliases && aliases.size > 0) {
       const all = [token, ...Array.from(aliases)].map(safeLexeme).filter(Boolean);
-      const unique = [...new Set(all)].slice(0, 8);
+      const unique = Array.from(new Set(all)).slice(0, 8);
       groups.push(unique.length > 1 ? `(${unique.join(" | ")})` : `${safeLexeme(token)}:*`);
     } else {
       // No synonym — use prefix matching so "brak" finds "brake"

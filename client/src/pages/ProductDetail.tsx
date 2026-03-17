@@ -458,7 +458,7 @@ export default function ProductDetail() {
                   {reviewCount > 0 ? `${avgRating.toFixed(1)} (${reviewCount} review${reviewCount !== 1 ? "s" : ""})` : "No reviews yet"}
                 </span>
               </div>
-              {p.views > 0 && (
+              {(p.views ?? 0) > 0 && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Eye className="h-3 w-3" /> {p.views} views
                 </span>
@@ -616,7 +616,7 @@ export default function ProductDetail() {
                             <span className="text-xs font-medium text-foreground/80">{vendorRating.toFixed(1)}</span>
                           </div>
                         )}
-                        {vendor.totalSales > 0 && (
+                        {(vendor.totalSales ?? 0) > 0 && (
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <TrendingUp className="h-3 w-3" />{vendor.totalSales} sold
                           </div>

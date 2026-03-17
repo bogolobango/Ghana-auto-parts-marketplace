@@ -6,8 +6,7 @@
  * based on Ghana market data (Tonaton, Jiji pricing).
  */
 
-import { db } from "./db";
-import { categories, vendors, users, products } from "../drizzle/schema";
+import { getDb } from "./db";
 import { sql } from "drizzle-orm";
 
 // ── Categories ──────────────────────────────────────────────
@@ -126,6 +125,9 @@ const LISTINGS = [
 
 async function seed() {
   console.log("🌱 Starting seed...\n");
+
+  const db = await getDb();
+  if (!db) throw new Error("Could not connect to database");
 
   // 1. Categories
   console.log("→ Seeding categories...");

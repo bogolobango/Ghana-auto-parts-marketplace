@@ -223,7 +223,7 @@ export type ProductWithVendor = Product & { vendorWhatsapp?: string | null; vend
 
 async function enrichWithVendorData(items: Product[], dbConn: ReturnType<typeof drizzle>): Promise<ProductWithVendor[]> {
   if (items.length === 0) return items;
-  const vendorIds = [...new Set(items.map(p => p.vendorId))];
+  const vendorIds = Array.from(new Set(items.map(p => p.vendorId)));
   const vendorRows = await dbConn
     .select({ id: vendors.id, whatsapp: vendors.whatsapp, businessName: vendors.businessName })
     .from(vendors)
@@ -662,7 +662,7 @@ export async function getPublicStats() {
       (SELECT count(*) FROM vendors   WHERE status = 'approved') AS "totalVendors",
       (SELECT count(*) FROM categories) AS "totalCategories"
   `);
-  const r = (result.rows?.[0] ?? result[0] ?? {}) as any;
+  const r = (result.rows?.[0] ?? (result as any)[0] ?? {}) as any;
   return {
     totalProducts:   Number(r.totalProducts   || 0),
     totalVendors:    Number(r.totalVendors    || 0),
@@ -683,7 +683,7 @@ export async function getAdminStats() {
       (SELECT count(*) FROM users)                               AS "totalUsers",
       (SELECT COALESCE(SUM("totalAmount"), 0) FROM orders)       AS "totalRevenue"
   `);
-  const r = (result.rows?.[0] ?? result[0] ?? {}) as any;
+  const r = (result.rows?.[0] ?? (result as any)[0] ?? {}) as any;
   return {
     totalVendors:   Number(r.totalVendors   || 0),
     pendingVendors: Number(r.pendingVendors  || 0),
@@ -768,7 +768,7 @@ export async function checkRateLimitDB(key: string, windowMs: number, maxRequest
           "resetAt" = CASE WHEN rate_limits."resetAt" < NOW() THEN ${resetAt} ELSE rate_limits."resetAt" END
     RETURNING count, "resetAt"
   `);
-  const row = (result.rows?.[0] ?? result[0] ?? {}) as any;
+  const row = (result.rows?.[0] ?? (result as any)[0] ?? {}) as any;
   const count = Number(row.count || 0);
   const expiry = new Date(row.resetAt || now);
   if (count > maxRequests && expiry > now) {
